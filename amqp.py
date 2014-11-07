@@ -392,9 +392,14 @@ class PikaClient(object):
         except KeyError:
             pass
 
+class BaseHandler(tornado.web.RequestHandler):
+    def get(self,*args,**kwargs):
+        self.render('index.html')
+
 if __name__ == "__main__":
     app = tornado.web.Application([
         (r'/amqp',AMQPHandler),
+        (r'/',BaseHandler),
     ])
 
     io_loop = tornado.ioloop.IOLoop.instance()
@@ -403,7 +408,7 @@ if __name__ == "__main__":
     pc.application = app
     app.pc = pc
     try:
-        app.listen(8888)
+        app.listen(18510)
         pc.run()
     except KeyboardInterrupt:
         pc.stop()
