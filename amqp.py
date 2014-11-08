@@ -1,3 +1,4 @@
+import os
 import pika
 from pika import adapters
 import json
@@ -397,10 +398,13 @@ class BaseHandler(tornado.web.RequestHandler):
         self.render('index.html')
 
 if __name__ == "__main__":
+    static_path = os.path.join(os.curdir, "static")
+    options = {'debug':True}
     app = tornado.web.Application([
         (r'/amqp',AMQPHandler),
+        (r'/static/(.*)', tornado.web.StaticFileHandler, {'path':static_path}),
         (r'/',BaseHandler),
-    ])
+    ], **options)
 
     io_loop = tornado.ioloop.IOLoop.instance()
     

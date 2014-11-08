@@ -9,12 +9,18 @@
         <div>
             <textarea id="message"></textarea>
             <br>
-            <select id="user">
-                <option value="user1">user1</option>
-                <option value="user2">user2</option>
-                <option value="user3">user3</option>
+            <input id="username" placeholder="Username..."/>
+            <select id="color" style="color:red;" onChange="this.style.color=this.value">
+                <option value="red" style="color:red;">red</option>
+                <option value="blue" style="color:blue;">blue</option>
+                <option value="yellow" style="color:yellow;">yellow</option>
+                <option value="green" style="color:green;">green</option>
+                <option value="purple" style="color:purple;">purple</option>
+                <option value="orange" style="color:orange;">orange</option>
             </select>
             <button id="send" onclick="send()">Send</button>
+            <div id="error"></div>
+            <br>
             <div id="connection-status" style="background: red; color: white;">Disconnected</div>
         </div>
     </body>

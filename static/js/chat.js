@@ -10,7 +10,14 @@ window.ws = {
     connected:false,
 }
 var init_websocket = function() {
-    window.ws.sock = new WebSocket('ws://127.0.0.1:8888/amqp');
+    var url = window.location.href;
+    if (url[url.length-1] == "/") {
+        url = url.slice(0,url.length-1);
+    }
+    if (url.indexOf("http://") === 0) {
+        url = url.slice("http://".length);
+    }
+    window.ws.sock = new WebSocket('ws://'+url+'/amqp');
     window.ws.sock.onopen = function(){
         this.connected = true;
         document.getElementById('connection-status').style['background'] = 'green';
@@ -40,16 +47,17 @@ var init_websocket = function() {
             msg = JSON.parse(msg);
         }
         console.log("message received");
-        appendMessage(msg["username"],msg["body"]);
+        appendMessage(msg["username"],msg["body"],msg["color"]);
     };
-    window.ws.send = function (username,msg,routing_key,exchange) {
-        console.log('send');
+    window.ws.send = function (username,msg,routing_key,exchange,color) {
+        document.getElementById('error').innerHTML='';
         var m = JSON.stringify({
             "action":"publish",
             "body":msg,
             "username":username,
             "exchange":exchange,
-            "routing_key":routing_key
+            "routing_key":routing_key,
+            "color":color
         });
         this.sock.send(m);
     };
@@ -59,18 +67,22 @@ document.addEventListener("DOMContentLoaded",init_websocket);
 
 function send() {
     var msg = document.getElementById('message').value;
+    var user = get_username(), color = get_color();
     if (msg.length === 0) {
+        document.getElementById('error').innerHTML='There is no text in the message box';
         return;
     }
-    var user = document.getElementById('user').value;
-    //appendMessage(user,msg);
-    window.ws.send(user,msg,'test','');
+    if (user.length === 0) {
+        document.getElementById('error').innerHTML='Please enter a username';
+        return;
+    }
+    window.ws.send(user,msg,'test','',color);
     document.getElementById('message').value="";
 }
-function appendMessage(username,msg) {
-    document.getElementById('feed').innerHTML += newMessage(username,msg);
+function appendMessage(username,msg,color) {
+    document.getElementById('feed').innerHTML += newMessage(username,msg,color);
 }
-function newMessage(username,msg) {
-    return '<div class="message"><span class="message-username" style="color:'+USERS[username].color+';">'+username+': </span><span class="message-content">'+msg+'</span></div>';
+function newMessage(username,msg,color) {
+    return '<div class="message"><span class="message-username" style="color:'+color+';">'+username+': </span><span class="message-content">'+msg+'</span></div>';
 }
 
