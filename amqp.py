@@ -46,6 +46,7 @@ class AMQPHandler(tornado.websocket.WebSocketHandler):
     def send_message(self,message):
         self.write_message(message)
        
+    @tornado.web.asynchronous
     def on_message(self,message):
         _json = json.loads(message)
         actions = {
@@ -54,7 +55,7 @@ class AMQPHandler(tornado.websocket.WebSocketHandler):
         try:
             actions[_json['action']](_json,message)
         except:
-            print traceback.format_exc()
+            self.pc.log.log(traceback.format_exc())
         
     def publish(self,_json,message):
         self.application.pc._channel.basic_publish(_json['exchange'],_json['routing_key'],message)
