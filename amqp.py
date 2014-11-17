@@ -32,6 +32,9 @@ class Log(object):
             f.write('')
 
 class AMQPHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+
     def open(self, *args, **kwargs):
         self.application.pc.add_event_listener(self)
         self.application.pc._channel.basic_consume(
