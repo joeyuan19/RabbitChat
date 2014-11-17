@@ -1,4 +1,3 @@
-import os
 import pika
 from pika import adapters
 import json
@@ -44,7 +43,13 @@ class AMQPHandler(tornado.websocket.WebSocketHandler):
         self.application.pc.remove_event_listener(self)
     
     def send_message(self,message):
-        self.write_message(message)
+        while True:
+            try:
+                self.write_message(message)
+                break
+            except WebSocketClosedError:
+                time.sleep(1)
+                
        
     def on_message(self,message):
         _json = json.loads(message)
@@ -393,18 +398,10 @@ class PikaClient(object):
         except KeyError:
             pass
 
-class BaseHandler(tornado.web.RequestHandler):
-    def get(self,*args,**kwargs):
-        self.render('index.html')
-
 if __name__ == "__main__":
-    static_path = os.path.join(os.curdir, "static")
-    options = {'debug':True}
     app = tornado.web.Application([
         (r'/amqp',AMQPHandler),
-        (r'/static/(.*)', tornado.web.StaticFileHandler, {'path':static_path}),
-        (r'/',BaseHandler),
-    ], **options)
+    ])
 
     io_loop = tornado.ioloop.IOLoop.instance()
     
@@ -412,7 +409,7 @@ if __name__ == "__main__":
     pc.application = app
     app.pc = pc
     try:
-        app.listen(18510)
+        app.listen(8888)
         pc.run()
     except KeyboardInterrupt:
         pc.stop()
