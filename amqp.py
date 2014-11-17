@@ -1,8 +1,9 @@
+import os
 import pika
 from pika import adapters
 import json
 import tornado
-import tornado.websocket
+import tornado.websocket as websocket
 from pika.adapters.tornado_connection import TornadoConnection
 import datetime
 import traceback
@@ -50,10 +51,10 @@ class AMQPHandler(tornado.websocket.WebSocketHandler):
             try:
                 self.write_message(message)
                 break
-            except WebSocketClosedError:
+            except websocket.WebSocketClosedError:
                 time.sleep(1)
-                
-       
+            
+   
     @tornado.web.asynchronous
     def on_message(self,message):
         _json = json.loads(message)
@@ -85,7 +86,7 @@ class PikaClient(object):
 
     """
     EXCHANGE = 'message'
-    EXCHANGE_TYPE = 'topic'
+    XCHANGE_TYPE = 'topic'
     QUEUE = 'test'
     ROUTING_KEY = 'message.test'
 
@@ -402,21 +403,36 @@ class PikaClient(object):
         except KeyError:
             pass
 
+class BaseHandler(tornado.web.RequestHandler):
+    def get(self,*args,**kwargs):
+        self.render('index.html')
+
+from optparse import OptionParser
+
 if __name__ == "__main__":
+    parser = OptionParser()
+    parser.add_option("-d",dest="debug",action="store_false",
+        help="run torando in debug mode",metavar="DEBUG",default=True)
+    (options,args) = parser.parse_args()
+
+    static_path = os.path.join(os.curdir, "static")
+    options = {'debug':options.debug}
     app = tornado.web.Application([
         (r'/amqp',AMQPHandler),
-    ])
+        (r'/static/(.*)', tornado.web.StaticFileHandler, {'path':static_path}),
+        (r'/',BaseHandler),
+    ], **options)
 
     io_loop = tornado.ioloop.IOLoop.instance()
-    
+ 
+    # PikaClient is our rabbitmq consumer
     pc = PikaClient('amqp://guest:guest@localhost:5672/%2F',Log('PikaLog',True))
     pc.application = app
     app.pc = pc
     try:
-        app.listen(8888)
+        app.listen(18510)
         pc.run()
     except KeyboardInterrupt:
         pc.stop()
-
 
 

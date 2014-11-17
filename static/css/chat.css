@@ -3,6 +3,8 @@
     width: 500px;
     border: 1px solid black;
     margin: 3px;
+    overflow: scroll;
+    scroll:;
 }
 #message {
     width: 502px;

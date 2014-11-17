@@ -81,8 +81,23 @@ function send() {
 }
 function appendMessage(username,msg,color) {
     document.getElementById('feed').innerHTML += newMessage(username,msg,color);
+    document.getElementById('feed').scrollTop = document.getElementById('feed').scrollHeight; 
+
 }
 function newMessage(username,msg,color) {
     return '<div class="message"><span class="message-username" style="color:'+color+';">'+username+': </span><span class="message-content">'+msg+'</span></div>';
 }
 
+var checkSend = function(evt){
+    evt = window.event || evt;
+    var key = evt.which || evt.keyCode;
+    if (key == 13) {
+        send();
+        if (window.event) {
+            window.event.returnValue = false;
+        } else {
+            evt.preventDefault();
+        }
+    }
+    return true;
+}
