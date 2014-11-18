@@ -1,6 +1,6 @@
+import time
 import os
 import pika
-from pika import adapters
 import json
 import tornado
 import tornado.websocket as websocket
@@ -12,7 +12,7 @@ import traceback
 class Log(object):
     def __init__(self,logname,log_to_console=False):
         self.log_to_console = log_to_console
-        self.logname
+        self._logname = logname
     
     def time_now(self):
         return datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
@@ -25,7 +25,7 @@ class Log(object):
             f.write('\n'+self.time_now()+': '+entry+'\n')
     
     def logname(self):
-        return self.logname+'.log'
+        return self._logname+'.log'
 
     def clear(self):
         with open(self.logname(),'w') as f:
@@ -51,7 +51,7 @@ class AMQPHandler(tornado.websocket.WebSocketHandler):
             try:
                 self.write_message(message)
                 break
-            except websocket.WebSocketClosedError:
+            except tornado.websocket.WebSocketClosedError:
                 time.sleep(1)
             
    
@@ -86,7 +86,7 @@ class PikaClient(object):
 
     """
     EXCHANGE = 'message'
-    XCHANGE_TYPE = 'topic'
+    EXCHANGE_TYPE = 'topic'
     QUEUE = 'test'
     ROUTING_KEY = 'message.test'
 
@@ -101,7 +101,7 @@ class PikaClient(object):
 
     def connect(self):
         self.log.log('Connecting to %s' % self._url)
-        return adapters.TornadoConnection(pika.URLParameters(self._url),
+        return pika.adapters.TornadoConnection(pika.URLParameters(self._url),
                                           self.on_connection_open)
 
     def close_connection(self):
@@ -426,7 +426,7 @@ if __name__ == "__main__":
     io_loop = tornado.ioloop.IOLoop.instance()
  
     # PikaClient is our rabbitmq consumer
-    pc = PikaClient('amqp://guest:guest@localhost:5672/%2F',Log('PikaLog',True))
+    pc = PikaClient('amqp://guest:guest@localhost:5672/%2F',Log('PikaLog',False))
     pc.application = app
     app.pc = pc
     try:

@@ -47,13 +47,14 @@ var init_websocket = function() {
             msg = JSON.parse(msg);
         }
         console.log("message received");
-        appendMessage(msg["username"],msg["body"],msg["color"]);
+        appendMessage(msg["username"],msg["body"],msg["color"],msg["timestamp"]);
     };
     window.ws.send = function (username,msg,routing_key,exchange,color) {
         document.getElementById('error').innerHTML='';
         var m = JSON.stringify({
             "action":"publish",
             "body":msg,
+            "timestamp":timestamp(),
             "username":username,
             "exchange":exchange,
             "routing_key":routing_key,
@@ -62,6 +63,19 @@ var init_websocket = function() {
         this.sock.send(m);
     };
 };
+
+function timestamp() {
+    var time = new Date();
+    var s = time.getSeconds()+"";
+    if (s.length < 2) {
+        s = "0"+s;
+    }
+    var m = time.getSeconds()+"";
+    if (m.length < 2) {
+        m = "0"+m;
+    }
+    return time.getHours()+":"+m+":"+s+" "+time.getMonth()+"/"+time.getDay()+"/"+time.getFullYear();
+}
 
 document.addEventListener("DOMContentLoaded",init_websocket);
 
@@ -79,13 +93,13 @@ function send() {
     window.ws.send(user,msg,'test','',color);
     document.getElementById('message').value="";
 }
-function appendMessage(username,msg,color) {
-    document.getElementById('feed').innerHTML += newMessage(username,msg,color);
+function appendMessage(username,msg,color,time) {
+    document.getElementById('feed').innerHTML += newMessage(username,msg,color,time);
     document.getElementById('feed').scrollTop = document.getElementById('feed').scrollHeight; 
 
 }
-function newMessage(username,msg,color) {
-    return '<div class="message"><span class="message-username" style="color:'+color+';">'+username+': </span><span class="message-content">'+msg+'</span></div>';
+function newMessage(username,msg,color,time) {
+    return '<div class="message"><span class="message-username" style="color:'+color+';">'+username+'<span class="timestamp"> ('+time+')</span>: </span><span class="message-content">'+msg+'</span></div>';
 }
 
 var checkSend = function(evt){
@@ -101,3 +115,21 @@ var checkSend = function(evt){
     }
     return true;
 }
+var toggleTime = function() {
+    var elms = document.getElementsByClassName('timestamp');
+    console.log(elms);
+    if (elms.length === 0) {
+        return;
+    }
+    if (elms[0].style.display === "none") {
+        var state = "inline";
+        document.getElementById('time').innerHTML='Hide Timestamps';
+    } else {
+        var state = "none";
+        document.getElementById('time').innerHTML='Show Timestamps';
+    }
+    for (var i = 0; i < elms.length; i++) {
+        elms[i].style.display = state;
+    }
+}
+

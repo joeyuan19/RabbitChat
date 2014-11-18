@@ -24,3 +24,6 @@
 .message {
     width: 100%;
 }
+.timestamp {
+    display: none;
+}

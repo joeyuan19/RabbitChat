@@ -1,0 +1,42 @@
+
+11/18/2014 00:06:55: Connecting to amqp://guest:guest@localhost:5672/%2F
+
+11/18/2014 00:06:55: Connection opened
+
+11/18/2014 00:06:55: Adding connection close callback
+
+11/18/2014 00:06:55: Creating a new channel
+
+11/18/2014 00:06:55: Channel opened
+
+11/18/2014 00:06:55: Adding channel close callback
+
+11/18/2014 00:06:55: Declaring exchange message
+
+11/18/2014 00:06:55: Exchange declared
+
+11/18/2014 00:06:55: Declaring queue test
+
+11/18/2014 00:06:55: Binding message to test with message.test
+
+11/18/2014 00:06:55: Queue bound
+
+11/18/2014 00:06:55: Issuing consumer related RPC commands
+
+11/18/2014 00:06:55: Adding consumer cancellation callback
+
+11/18/2014 00:07:03: PikaClient: listener <__main__.AMQPHandler object at 0x7f3b5ca5c990> added
+
+11/18/2014 00:07:08: Received message # 1 from None: {"action":"publish","body":"derp","timestamp":"19:56:56 10/1/2014","username":"joe","exchange":"","routing_key":"test","color":"red"}
+
+11/18/2014 00:07:08: PikaClient: notified <__main__.AMQPHandler object at 0x7f3b5ca5c990>
+
+11/18/2014 00:07:08: Acknowledging message 1
+
+11/18/2014 00:12:08: PikaClient: listener <__main__.AMQPHandler object at 0x7f3b5ca5c990> removed
+
+11/18/2014 00:12:18: PikaClient: listener <__main__.AMQPHandler object at 0x7f3b5ca62210> added
+
+11/18/2014 00:17:18: PikaClient: listener <__main__.AMQPHandler object at 0x7f3b5ca62210> removed
+
+11/18/2014 00:17:25: PikaClient: listener <__main__.AMQPHandler object at 0x7f3b5ca62090> added
