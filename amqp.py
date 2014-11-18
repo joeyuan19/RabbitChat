@@ -102,7 +102,7 @@ class PikaClient(object):
     def connect(self):
         self.log.log('Connecting to %s' % self._url)
         return adapters.TornadoConnection(pika.URLParameters(self._url),
-                                          self.on_connection_open)
+                                          self.on_connection_open,stop_ioloop_on_close=False)
 
     def close_connection(self):
         self.log.log('Closing connection')
