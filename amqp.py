@@ -416,17 +416,17 @@ if __name__ == "__main__":
     (options,args) = parser.parse_args()
 
     static_path = os.path.join(os.curdir, "static")
-    options = {'debug':options.debug}
+    app_options = {'debug':options.debug}
     app = tornado.web.Application([
         (r'/amqp',AMQPHandler),
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path':static_path}),
         (r'/',BaseHandler),
-    ], **options)
+    ], **app_options)
 
     io_loop = tornado.ioloop.IOLoop.instance()
  
     # PikaClient is our rabbitmq consumer
-    pc = PikaClient('amqp://guest:guest@localhost:5672/%2F',Log('PikaLog',False))
+    pc = PikaClient('amqp://guest:guest@localhost:5672/%2F',Log('PikaLog',operations.debug))
     pc.application = app
     app.pc = pc
     try:
